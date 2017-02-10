@@ -4211,7 +4211,7 @@ struct butchery_t: public hunter_melee_attack_t
 
     if ( p() -> legendary.sv_ring )
     {
-      if ( num_targets() > 1 )
+      if ( num_targets() > 1 /*num_targets() >= 1 or just omit this whole if*/ )
       {
         std::vector<player_t*> butchery_targets = execute_state -> action -> target_list();
         std::vector<player_t*> available_targets;
@@ -4230,10 +4230,13 @@ struct butchery_t: public hunter_melee_attack_t
         for ( size_t i = 0; i < lacerated_targets.size(); i++ )
         {
           if ( available_targets.empty() )
+              // Reapply lacerate with carve/butchery ---
+              // td( s -> target ) -> debuffs.lacerate -> trigger(); --------
             break;
 
-          td( lacerated_targets[ i ] ) -> dots.lacerate -> copy( available_targets.back(), DOT_COPY_CLONE );
-          available_targets.pop_back();
+          td( lacerated_targets[ i ] ) -> dots.lacerate -> copy( available_targets.back(), DOT_COPY_CLONE ); 
+          //td( lacerated_targets[ i ] ) -> debuffs.lacerate -> trigger(); -----
+          available_targets.pop_back(); 
         }
       }
       else
